@@ -8,20 +8,18 @@ export class PostController {
 
   @Get()
   async getPosts() {
-    const postResponseDtos = await this.postService.getPosts();
-    return postResponseDtos;
+    return await this.postService.getPosts();
   }
 
   @Get(':postId')
   async getPostById(@Param('postId') id: number) {
-    const postResponseDto = await this.postService.getPostById(id);
-    return postResponseDto;
+    return await this.postService.getPostById(id);
   }
 
   @Post()
-  createPost(@Body() dto: CreatePostRequestDto) {
+  async createPost(@Body() dto: CreatePostRequestDto) {
     const postEntity = dto.toPostEntity();
-    this.postService.createPost(postEntity);
+    await this.postService.createPost(postEntity);
     return `Post created`;
   }
 

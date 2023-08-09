@@ -6,33 +6,39 @@ import { PostEntity } from './post.entity';
 export class PostRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  findPosts() {
-    return this.prisma.post.findMany();
+  async findPosts() {
+    const posts = await this.prisma.post.findMany();
+    return posts.map((post) =>
+      PostEntity.from(post.id, post.title, post.content),
+    );
   }
 
-  findPostById(postId: number) {
-    return this.prisma.post.findUnique({
+  async findPostById(postId: number) {
+    const post = await this.prisma.post.findUnique({
       where: {
         id: postId,
       },
     });
+    return PostEntity.from(post.id, post.title, post.content);
   }
 
-  createPost(postEntity: PostEntity) {
+  async createPost(postEntity: PostEntity) {
     const { title, content } = postEntity;
-    return this.prisma.post.create({
+    const post = await this.prisma.post.create({
       data: {
         title,
         content,
       },
     });
+    return PostEntity.from(post.id, post.title, post.content);
   }
 
-  deletePostById(postId: number) {
-    return this.prisma.post.delete({
+  async deletePostById(postId: number) {
+    const post = await this.prisma.post.delete({
       where: {
         id: postId,
       },
     });
+    return PostEntity.from(post.id, post.title, post.content);
   }
 }

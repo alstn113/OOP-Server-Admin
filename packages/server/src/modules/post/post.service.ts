@@ -20,11 +20,11 @@ export class PostService {
     return PostResponseDto.from(id, title, content);
   }
 
-  createPost(postEntity: PostEntity) {
-    return this.postRepository.createPost(postEntity);
+  async createPost(postEntity: PostEntity) {
+    return await this.postRepository.createPost(postEntity);
   }
 
-  deletePostById(postId: number) {
-    return this.postRepository.deletePostById(postId);
+  async deletePostById(postId: number) {
+    return await this.postRepository.deletePostById(postId);
   }
 }

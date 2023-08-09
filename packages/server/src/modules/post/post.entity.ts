@@ -6,8 +6,10 @@ export class PostEntity {
   private readonly _title: string;
   private readonly _content: string;
 
-  constructor(partial: Partial<PostEntity>) {
-    Object.assign(this, partial);
+  constructor(id: number, title: string, content: string) {
+    this._id = id;
+    this._title = title;
+    this._content = content;
   }
 
   @Expose()
@@ -23,5 +25,9 @@ export class PostEntity {
   @Expose()
   get content(): string {
     return this._content;
+  }
+
+  static from(id: number, title: string, content: string) {
+    return new PostEntity(id, title, content);
   }
 }
