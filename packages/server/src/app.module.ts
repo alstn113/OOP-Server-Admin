@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: ['.env.development'],
       load: [configuration],
       ignoreEnvFile: process.env.NODE_ENV === 'production',
     }),
