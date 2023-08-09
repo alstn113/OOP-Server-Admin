@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+    "dev": "pnpm --filter server start:dev",
+    "prisma:migrate": "pnpm --filter server prisma:migrate",
+    "prisma:push": "pnpm --filter server prisma:push",
+    "prisma:generate": "pnpm --filter server prisma:generate",
+    "prisma:studio": "pnpm --filter server prisma:studio"
+  }
 }
