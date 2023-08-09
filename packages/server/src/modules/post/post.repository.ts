@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { PostEntity } from './post.entity';
 
 @Injectable()
 export class PostRepository {
@@ -17,18 +18,12 @@ export class PostRepository {
     });
   }
 
-  createPost(
-    title: string,
-    content: string,
-    published: boolean,
-    authorId: number,
-  ) {
+  createPost(postEntity: PostEntity) {
+    const { title, content } = postEntity;
     return this.prisma.post.create({
       data: {
         title,
         content,
-        published,
-        authorId,
       },
     });
   }
