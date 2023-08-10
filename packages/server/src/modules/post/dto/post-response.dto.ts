@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 
 @Exclude()
@@ -13,16 +14,19 @@ export class PostResponseDto {
   }
 
   @Expose()
+  @ApiProperty()
   get id(): number {
     return this._id;
   }
 
   @Expose()
+  @ApiProperty()
   get title(): string {
     return this._title;
   }
 
   @Expose()
+  @ApiProperty()
   get content(): string {
     return this._content;
   }

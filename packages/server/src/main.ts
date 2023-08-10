@@ -8,6 +8,7 @@ import {
 import helmet from 'helmet';
 import * as cookieParser from 'cookie-parser';
 import * as compression from 'compression';
+import { createDocumnet } from './lib/swagger';
 
 const bootstrap = async () => {
   const app = await NestFactory.create(AppModule);
@@ -38,6 +39,7 @@ const bootstrap = async () => {
   );
 
   app.enableShutdownHooks();
+  createDocumnet(app);
   await app.listen(AppModule.PORT);
   return AppModule.PORT;
 };
