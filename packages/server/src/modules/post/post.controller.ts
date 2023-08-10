@@ -24,8 +24,8 @@ export class PostController {
   }
 
   @Delete(':postId')
-  deletePostById(id: number) {
-    this.postService.deletePostById(id);
+  async deletePostById(id: number) {
+    await this.postService.deletePostById(id);
     return `Post deleted`;
   }
 }
