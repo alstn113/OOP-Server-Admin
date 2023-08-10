@@ -19,6 +19,7 @@ export class PostRepository {
         id: postId,
       },
     });
+    if (!post) return null;
     return PostEntity.from(post.id, post.title, post.content);
   }
 
