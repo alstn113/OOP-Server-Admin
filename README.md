@@ -9,6 +9,8 @@ workspace
 
 ## 정리
 
+### 아키텍처
+
 - controller -> service
   - dto를 받아서 entity로 변환한 후 service로 전달.
   - 에러 처리는 controller에서 한다.
@@ -20,3 +22,8 @@ workspace
   - repository는 entity를 반환한다.
 - service -> controller
   - service에서 entity를 dto로 변환한 후 controller로 전달.
+
+### 인증
+
+- access-token은 jwt bearer token을 사용한다.
+- refresh-token은 cookie를 사용한다.

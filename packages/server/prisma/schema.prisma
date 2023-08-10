@@ -3,20 +3,49 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int       @id @default(autoincrement())
+  username String    @unique
+  password String
+  role     Role      @default(USER)
+  posts    Post[]
+  comments Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Post {
   id       Int       @id @default(autoincrement())
   title    String
   content  String
+  userId   Int
   comments Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  User User @relation(fields: [userId], references: [id])
 }
 
 model Comment {
   id     Int    @id @default(autoincrement())
   text   String
   postId Int
-  post   Post   @relation(fields: [postId], references: [id])
+  userId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  post Post @relation(fields: [postId], references: [id])
+  User User @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  USER
 }
