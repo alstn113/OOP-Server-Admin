@@ -2,7 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
 import { PrismaModule } from './prisma/prisma.module';
-import { PostModule } from './modules';
+import {
+  AuthModule,
+  UsersModule,
+  PostsModule,
+  CommentsModule,
+} from './modules';
 
 @Module({
   imports: [
@@ -13,7 +18,10 @@ import { PostModule } from './modules';
     }),
     PrismaModule,
     // main modules
-    PostModule,
+    AuthModule,
+    UsersModule,
+    PostsModule,
+    CommentsModule,
   ],
   controllers: [],
   providers: [],
