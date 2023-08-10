@@ -1,16 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PostEntity } from './post.entity';
+import { Post } from './entities/post.entity';
 
 @Injectable()
-export class PostRepository {
+export class PostsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findPosts() {
     const posts = await this.prisma.post.findMany();
-    return posts.map((post) =>
-      PostEntity.from(post.id, post.title, post.content),
-    );
+    return posts.map((post) => Post.from(post.id, post.title, post.content));
   }
 
   async findPostById(postId: number) {
@@ -20,18 +18,18 @@ export class PostRepository {
       },
     });
     if (!post) return null;
-    return PostEntity.from(post.id, post.title, post.content);
+    return Post.from(post.id, post.title, post.content);
   }
 
-  async createPost(postEntity: PostEntity) {
-    const { title, content } = postEntity;
+  async createPost(Post: Post) {
+    const { title, content } = Post;
     const post = await this.prisma.post.create({
       data: {
         title,
         content,
       },
     });
-    return PostEntity.from(post.id, post.title, post.content);
+    return Post.from(post.id, post.title, post.content);
   }
 
   async deletePostById(postId: number) {
@@ -40,6 +38,6 @@ export class PostRepository {
         id: postId,
       },
     });
-    return PostEntity.from(post.id, post.title, post.content);
+    return Post.from(post.id, post.title, post.content);
   }
 }

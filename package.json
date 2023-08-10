@@ -1,4 +1,7 @@
 {
+  "dependencies": {
+    "@nestjs/mapped-types": "*"
+  },
   "name": "oop-server-admin",
   "version": "1.0.0",
   "description": "",
