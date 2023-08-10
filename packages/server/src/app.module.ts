@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
 import { PrismaModule } from './prisma/prisma.module';
 import { PostModule } from './modules';
@@ -18,4 +18,14 @@ import { PostModule } from './modules';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule {
+  static PORT: number;
+  static API_PREFIX: string;
+  static FRONTEND_URL: string;
+
+  constructor(private readonly configService: ConfigService) {
+    AppModule.PORT = this.configService.get<number>('PORT');
+    AppModule.API_PREFIX = this.configService.get<string>('API_PREFIX');
+    AppModule.FRONTEND_URL = this.configService.get<string>('FRONTEND_URL');
+  }
+}

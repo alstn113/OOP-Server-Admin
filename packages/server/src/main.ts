@@ -1,18 +1,25 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ConfigService } from '@nestjs/config';
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
+import helmet from 'helmet';
+import * as cookieParser from 'cookie-parser';
+import * as compression from 'compression';
 
 const bootstrap = async () => {
   const app = await NestFactory.create(AppModule);
-  const configService = app.get(ConfigService);
-  const PORT = configService.get<number>('PORT');
-  const FRONTEND_URL = configService.get<string>('FRONTEND_URL');
 
-  app.setGlobalPrefix('api');
+  app.use(helmet()); // 보안 관련 헤더를 추가합니다.
+  app.use(cookieParser()); // 쿠키를 파싱합니다.
+  app.use(compression()); // 응답을 압축합니다.
+
+  app.setGlobalPrefix(AppModule.API_PREFIX);
 
   app.enableCors({
-    origin: FRONTEND_URL,
+    origin: AppModule.FRONTEND_URL,
     credentials: true,
   });
 
@@ -31,7 +38,10 @@ const bootstrap = async () => {
   );
 
   app.enableShutdownHooks();
-  await app.listen(PORT);
+  await app.listen(AppModule.PORT);
+  return AppModule.PORT;
 };
 
-bootstrap();
+bootstrap().then((port) => {
+  Logger.log(`Application running on port: ${port}`, 'Main');
+});
