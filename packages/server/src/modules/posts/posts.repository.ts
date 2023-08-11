@@ -1,14 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Post } from './entities/post.entity';
+import { PostEntity } from './entities/post.entity';
 
 @Injectable()
 export class PostsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findPosts() {
-    const posts = await this.prisma.post.findMany();
-    return posts.map((post) => Post.from(post.id, post.title, post.content));
+    const posts = await this.prisma.post.findMany({
+      include: {
+        user: true,
+        comments: true,
+      },
+    });
+    return posts.map(
+      (post) =>
+        new PostEntity(
+          post.id,
+          post.title,
+          post.content,
+          post.user,
+          post.userId,
+          post.createdAt,
+          post.updatedAt,
+          post.comments,
+        ),
+    );
   }
 
   async findPostById(postId: number) {
@@ -18,26 +35,44 @@ export class PostsRepository {
       },
     });
     if (!post) return null;
-    return Post.from(post.id, post.title, post.content);
+    return new PostEntity(
+      post.id,
+      post.title,
+      post.content,
+      post.user,
+      post.userId,
+      post.createdAt,
+      post.updatedAt,
+      post.comments,
+    );
   }
 
-  async createPost(Post: Post) {
-    const { title, content } = Post;
+  async createPost(postEntity: PostEntity) {
+    const { title, content, userId } = postEntity;
     const post = await this.prisma.post.create({
       data: {
         title,
         content,
+        userId,
       },
     });
-    return Post.from(post.id, post.title, post.content);
+    return new PostEntity(
+      post.id,
+      post.title,
+      post.content,
+      post.user,
+      post.userId,
+      post.createdAt,
+      post.updatedAt,
+      post.comments,
+    );
   }
 
   async deletePostById(postId: number) {
-    const post = await this.prisma.post.delete({
+    await this.prisma.post.delete({
       where: {
         id: postId,
       },
     });
-    return Post.from(post.id, post.title, post.content);
   }
 }

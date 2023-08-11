@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 
 @Exclude()
-export class PostResponse {
+export class PostResponseDto {
   private readonly _id: number;
   private readonly _title: string;
   private readonly _content: string;
@@ -32,6 +32,6 @@ export class PostResponse {
   }
 
   static from(id: number, title: string, content: string) {
-    return new PostResponse(id, title, content);
+    return new PostResponseDto(id, title, content);
   }
 }

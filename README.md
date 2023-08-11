@@ -12,10 +12,9 @@ workspace
 ### 아키텍처
 
 - controller -> service
-  - dto를 받아서 entity로 변환한 후 service로 전달.
   - 에러 처리는 controller에서 한다.
 - service -> repository
-  - entity를 받아서 repository로 전달.
+  - controller, service에서 dto를 entity로 변환한 후 repository로 전달.
   - 비즈니스 로직은 service에서 한다.
 - repository -> service
   - DB관련 로직은 repository에서 한다.

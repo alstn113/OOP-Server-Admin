@@ -8,14 +8,14 @@ import {
   Post,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { CreatePostRequest } from './dto/create-post-request.dto';
+import { CreatePostRequestDto } from './dto/create-post-request.dto';
 import {
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { PostResponse } from './dto/post-response.dto';
+import { PostResponseDto } from './dto/post-response.dto';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -23,13 +23,13 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  @ApiOkResponse({ description: 'Get All Posts', type: [PostResponse] })
+  @ApiOkResponse({ description: 'Get All Posts', type: [PostResponseDto] })
   async getPosts() {
     return await this.postsService.getPosts();
   }
 
   @Get(':postId')
-  @ApiOkResponse({ description: 'Get Post By Id', type: PostResponse })
+  @ApiOkResponse({ description: 'Get Post By Id', type: PostResponseDto })
   async getPostById(@Param('postId') id: number) {
     return await this.postsService.getPostById(id);
   }
@@ -37,9 +37,8 @@ export class PostsController {
   @Post()
   @HttpCode(201)
   @ApiCreatedResponse({ description: 'Created' })
-  async createPost(@Body() dto: CreatePostRequest) {
-    const Post = dto.toPost();
-    await this.postsService.createPost(Post);
+  async createPost(@Body() dto: CreatePostRequestDto) {
+    await this.postsService.createPost(dto);
   }
 
   @Delete(':postId')

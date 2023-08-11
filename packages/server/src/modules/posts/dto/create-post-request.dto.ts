@@ -1,10 +1,10 @@
 import { Exclude, Expose } from 'class-transformer';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { Post } from '../entities/post.entity';
+import { PostEntity } from '../entities/post.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Exclude()
-export class CreatePostRequest {
+export class CreatePostRequestDto {
   @Expose()
   @IsNotEmpty()
   @IsString()
@@ -17,7 +17,16 @@ export class CreatePostRequest {
   @ApiProperty()
   content: string;
 
-  toPost() {
-    return Post.from(null, this.title, this.content);
+  toPostEntity() {
+    return new PostEntity(
+      null,
+      this.title,
+      this.content,
+      null,
+      null,
+      null,
+      null,
+      null,
+    );
   }
 }
