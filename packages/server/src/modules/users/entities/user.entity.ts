@@ -1,10 +1,7 @@
 import { User } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
 
-export enum Role {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-}
+type Role = User['role'];
 
 @Exclude()
 export class UserEntity implements User {
