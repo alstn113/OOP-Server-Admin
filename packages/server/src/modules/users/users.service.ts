@@ -23,6 +23,10 @@ export class UsersService {
     return user;
   }
 
+  async getUserByUsername(username: string) {
+    return await this.usersRepository.findUserByUsername(username);
+  }
+
   async createUser(username: string, password: string, role: User['role']) {
     return await this.usersRepository.createUser(username, password, role);
   }

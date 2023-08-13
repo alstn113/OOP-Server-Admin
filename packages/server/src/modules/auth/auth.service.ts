@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { SignupRequestDto } from './dto/signup-request.dto';
 import { LoginRequestDto } from './dto/login-request.dto';
 import * as argon2 from 'argon2';
@@ -15,6 +19,8 @@ export class AuthService {
   ) {}
 
   async signup(dto: SignupRequestDto) {
+    const user = await this.usersService.getUserByUsername(dto.username);
+    if (user) throw new BadRequestException('User already exists');
     const hashedPassword = await this.hashData(dto.password);
     dto.password = hashedPassword;
     return this.usersService.createUser(dto.username, dto.password, dto.role);

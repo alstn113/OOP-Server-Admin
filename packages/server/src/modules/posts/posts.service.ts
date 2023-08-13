@@ -4,10 +4,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
-import { PostResponseDto } from './dto/post-response.dto';
 import { CreatePostRequestDto } from './dto/create-post-request.dto';
 import { UsersService } from '../users/users.service';
-import { Post, User } from '@prisma/client';
 
 @Injectable()
 export class PostsService {
@@ -38,7 +36,11 @@ export class PostsService {
   async deletePostById(postId: number, userId: number) {
     const user = await this.usersService.getUserByIdOrThrow(userId);
     const post = await this.getPostOrElseThrow(postId);
-    this.validateUserPostOwnership(user, post);
+    if (post.userId !== user.id) {
+      throw new UnauthorizedException(
+        `User with id ${user.id} is not authorized to delete post with id ${post.id}`,
+      );
+    }
     return await this.postsRepository.deletePostById(postId);
   }
 
@@ -46,13 +48,5 @@ export class PostsService {
     const post = await this.postsRepository.findPostById(postId);
     if (!post) throw new NotFoundException(`Post with id ${postId} not found`);
     return post;
-  }
-
-  validateUserPostOwnership(user: User, post: Post) {
-    if (post.userId !== user.id) {
-      throw new UnauthorizedException(
-        `User with id ${user.id} is not authorized to delete post with id ${post.id}`,
-      );
-    }
   }
 }
