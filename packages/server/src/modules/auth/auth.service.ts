@@ -7,10 +7,17 @@ import { SignupRequestDto } from './dto/signup-request.dto';
 import { LoginRequestDto } from './dto/login-request.dto';
 import * as argon2 from 'argon2';
 import { UsersRepository } from '../users/users.repository';
+import { UserEntity } from '../users/entities/user.entity';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+    private readonly usersRepository: UsersRepository,
+  ) {}
 
   async signup(dto: SignupRequestDto) {
     const hashedPassword = await this.hashData(dto.password);
@@ -29,13 +36,9 @@ export class AuthService {
     );
     if (!isPasswordMatches) throw new UnauthorizedException('Invalid password');
 
-    return userEntity;
-    //TODO: access token은 header
-    //TODO: refresh token은 cookie
-  }
+    const token = await this.generateToken(userEntity);
 
-  async logout() {
-    return;
+    return token;
   }
 
   private async hashData(data: string) {
@@ -44,5 +47,27 @@ export class AuthService {
 
   private async compareData(hashedData: string, data: string) {
     return await argon2.verify(hashedData, data);
+  }
+
+  private async generateToken(userEntity: UserEntity) {
+    const { id, username } = userEntity;
+    const token = await this.jwtService.signAsync(
+      { sub: id, username },
+      {
+        secret: this.configService.get<string>('ACCESS_TOKEN.SECRET'),
+        expiresIn: this.configService.get<string>('ACCESS_TOKEN.DURATION'),
+      },
+    );
+
+    return token;
+  }
+
+  async verifyToken(token: string) {
+    const decoded: { sub: string; username: string } =
+      await this.jwtService.verifyAsync(token, {
+        secret: this.configService.get<string>('ACCESS_TOKEN.SECRET'),
+      });
+
+    return decoded;
   }
 }

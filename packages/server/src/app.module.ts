@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import configuration from './config/configuration';
 import { PrismaModule } from './prisma/prisma.module';
 import {
   AuthModule,
@@ -8,12 +7,13 @@ import {
   PostsModule,
   CommentsModule,
 } from './modules';
+import { EnvConfig, JwtConfig } from './config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [configuration],
+      load: [EnvConfig, JwtConfig],
       ignoreEnvFile: process.env.NODE_ENV === 'production',
     }),
     PrismaModule,
