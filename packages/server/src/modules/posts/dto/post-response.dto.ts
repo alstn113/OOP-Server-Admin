@@ -1,37 +1,35 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
+import { UserResponseDto } from 'src/modules/users/dto/user-response.dto';
 
 @Exclude()
 export class PostResponseDto {
-  private readonly _id: number;
-  private readonly _title: string;
-  private readonly _content: string;
-
-  constructor(id: number, title: string, content: string) {
-    this._id = id;
-    this._title = title;
-    this._content = content;
-  }
+  @Expose()
+  @ApiProperty()
+  id: number;
 
   @Expose()
   @ApiProperty()
-  get id(): number {
-    return this._id;
-  }
+  title: string;
 
   @Expose()
   @ApiProperty()
-  get title(): string {
-    return this._title;
-  }
+  content: string;
 
   @Expose()
   @ApiProperty()
-  get content(): string {
-    return this._content;
-  }
+  userId: number;
 
-  static from(id: number, title: string, content: string) {
-    return new PostResponseDto(id, title, content);
-  }
+  @Expose()
+  @ApiProperty({ type: () => UserResponseDto })
+  @Type(() => UserResponseDto)
+  user: UserResponseDto;
+
+  @Expose()
+  @ApiProperty()
+  createdAt: Date;
+
+  @Expose()
+  @ApiProperty()
+  updatedAt: Date;
 }

@@ -8,6 +8,7 @@ import {
   CommentsModule,
 } from './modules';
 import { EnvConfig, JwtConfig } from './config';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { EnvConfig, JwtConfig } from './config';
       load: [EnvConfig, JwtConfig],
       ignoreEnvFile: process.env.NODE_ENV === 'production',
     }),
+    JwtModule.register({}),
     PrismaModule,
     // main modules
     AuthModule,

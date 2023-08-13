@@ -20,9 +20,9 @@ import {
 import { PostResponseDto } from './dto/post-response.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { GetCurrentUser } from '../auth/decorators/get-current-user.decorator';
-import { Request } from 'express';
+import { plainToInstance } from 'class-transformer';
 
-@ApiTags('Posts')
+@ApiTags('posts')
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
@@ -31,14 +31,18 @@ export class PostsController {
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ description: 'Get All Posts', type: [PostResponseDto] })
   async getPosts() {
-    return await this.postsService.getPosts();
+    const posts = await this.postsService.getPosts();
+    const postsResponse = plainToInstance(PostResponseDto, posts);
+    return postsResponse;
   }
 
   @Get(':postId')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ description: 'Get Post By Id', type: PostResponseDto })
   async getPostById(@Param('postId') postId: number) {
-    return await this.postsService.getPostById(postId);
+    const post = await this.postsService.getPostById(postId);
+    const postResponse = plainToInstance(PostResponseDto, post);
+    return postResponse;
   }
 
   @Post()
@@ -47,7 +51,7 @@ export class PostsController {
   @ApiCreatedResponse({ description: 'Created' })
   async createPost(
     @Body() dto: CreatePostRequestDto,
-    @GetCurrentUser() userId: number,
+    @GetCurrentUser('userId') userId: number,
   ) {
     await this.postsService.createPost(dto, userId);
   }
@@ -58,7 +62,7 @@ export class PostsController {
   @ApiNoContentResponse({ description: 'No Content' })
   async deletePostById(
     @Param('postId') postId: number,
-    @GetCurrentUser() userId: number,
+    @GetCurrentUser('userId') userId: number,
   ) {
     await this.postsService.deletePostById(postId, userId);
   }

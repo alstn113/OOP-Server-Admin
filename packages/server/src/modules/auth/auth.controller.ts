@@ -11,7 +11,9 @@ import { SignupRequestDto } from './dto/signup-request.dto';
 import { LoginRequestDto } from './dto/login-request.dto';
 import { Response } from 'express';
 import { clearTokenCookie, setTokenCookie } from 'src/lib/cookie';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -24,14 +26,25 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Res() res: Response, @Body() dto: LoginRequestDto) {
+  async login(
+    @Res({
+      passthrough: true,
+    })
+    res: Response,
+    @Body() dto: LoginRequestDto,
+  ) {
     const token = await this.authService.login(dto);
     setTokenCookie(res, token);
   }
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  logout(@Res() res: Response) {
+  logout(
+    @Res({
+      passthrough: true,
+    })
+    res: Response,
+  ) {
     clearTokenCookie(res);
   }
 }

@@ -1,8 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
 import { PostResponseDto } from './dto/post-response.dto';
 import { CreatePostRequestDto } from './dto/create-post-request.dto';
 import { UsersService } from '../users/users.service';
+import { Post, User } from '@prisma/client';
 
 @Injectable()
 export class PostsService {
@@ -12,26 +17,42 @@ export class PostsService {
   ) {}
 
   async getPosts() {
-    const posts = await this.postsRepository.findPosts();
-    return posts.map((post) =>
-      PostResponseDto.from(post.id, post.title, post.content),
-    );
+    return await this.postsRepository.findPosts();
   }
 
   async getPostById(postId: number) {
     const post = await this.postsRepository.findPostById(postId);
     if (!post) throw new NotFoundException(`Post with id ${postId} not found`);
-    const { id, title, content } = post;
-    return PostResponseDto.from(id, title, content);
+    return post;
   }
 
   async createPost(dto: CreatePostRequestDto, userId: number) {
-    const userEntity = await this.usersService.getUserByIdOrThrow(userId);
-    const postEntity = dto.toPostEntity(userEntity);
-    return await this.postsRepository.createPost(postEntity);
+    const user = await this.usersService.getUserByIdOrThrow(userId);
+    return await this.postsRepository.createPost(
+      dto.title,
+      dto.content,
+      user.id,
+    );
   }
 
   async deletePostById(postId: number, userId: number) {
+    const user = await this.usersService.getUserByIdOrThrow(userId);
+    const post = await this.getPostOrElseThrow(postId);
+    this.validateUserPostOwnership(user, post);
     return await this.postsRepository.deletePostById(postId);
+  }
+
+  async getPostOrElseThrow(postId: number) {
+    const post = await this.postsRepository.findPostById(postId);
+    if (!post) throw new NotFoundException(`Post with id ${postId} not found`);
+    return post;
+  }
+
+  validateUserPostOwnership(user: User, post: Post) {
+    if (post.userId !== user.id) {
+      throw new UnauthorizedException(
+        `User with id ${user.id} is not authorized to delete post with id ${post.id}`,
+      );
+    }
   }
 }

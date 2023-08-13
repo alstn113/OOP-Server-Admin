@@ -1,23 +1,29 @@
-import { IsNotEmpty, IsString } from 'class-validator';
-import { UserEntity } from 'src/modules/users/entities/user.entity';
+import { ApiProperty } from '@nestjs/swagger';
+import { User } from '@prisma/client';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+
+export enum Role {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+}
 
 export class SignupRequestDto {
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   username: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   password: string;
 
-  toUserEntity(hashedPassword: string) {
-    return new UserEntity(
-      null,
-      this.username,
-      hashedPassword,
-      null,
-      null,
-      null,
-    );
-  }
+  @ApiProperty({
+    type: 'enum',
+    default: Role.USER,
+    enumName: 'Role',
+    enum: Object.values(Role),
+  })
+  @IsEnum(Role)
+  role: User['role'];
 }
