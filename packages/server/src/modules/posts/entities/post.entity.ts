@@ -73,4 +73,17 @@ export class PostEntity implements Post {
   get comments(): Comment[] {
     return this._comments;
   }
+
+  setUserId(userId: number): PostEntity {
+    return new PostEntity(
+      this._id,
+      this._title,
+      this._content,
+      this._user,
+      userId,
+      this._createdAt,
+      this._updatedAt,
+      this._comments,
+    );
+  }
 }

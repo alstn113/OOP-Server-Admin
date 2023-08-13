@@ -1,16 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
-import { PostResponse } from './dto/post-response.dto';
-import { CreatePostRequest } from './dto/create-post-request.dto';
+import { PostResponseDto } from './dto/post-response.dto';
+import { CreatePostRequestDto } from './dto/create-post-request.dto';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class PostsService {
-  constructor(private readonly postsRepository: PostsRepository) {}
+  constructor(
+    private readonly postsRepository: PostsRepository,
+    private readonly usersService: UsersService,
+  ) {}
 
   async getPosts() {
     const posts = await this.postsRepository.findPosts();
     return posts.map((post) =>
-      PostResponse.from(post.id, post.title, post.content),
+      PostResponseDto.from(post.id, post.title, post.content),
     );
   }
 
@@ -18,15 +22,16 @@ export class PostsService {
     const post = await this.postsRepository.findPostById(postId);
     if (!post) throw new NotFoundException(`Post with id ${postId} not found`);
     const { id, title, content } = post;
-    return PostResponse.from(id, title, content);
+    return PostResponseDto.from(id, title, content);
   }
 
-  async createPost(dto: CreatePostRequest) {
-    const postEntity = dto.toPostEntity();
+  async createPost(dto: CreatePostRequestDto, userId: number) {
+    const userEntity = await this.usersService.getUserByIdOrThrow(userId);
+    const postEntity = dto.toPostEntity(userEntity);
     return await this.postsRepository.createPost(postEntity);
   }
 
-  async deletePostById(postId: number) {
+  async deletePostById(postId: number, userId: number) {
     return await this.postsRepository.deletePostById(postId);
   }
 }

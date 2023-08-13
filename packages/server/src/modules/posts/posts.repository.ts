@@ -48,12 +48,17 @@ export class PostsRepository {
   }
 
   async createPost(postEntity: PostEntity) {
-    const { title, content, userId } = postEntity;
+    const { title, content, userId, user } = postEntity;
     const post = await this.prisma.post.create({
       data: {
         title,
         content,
         userId,
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
       },
     });
     return new PostEntity(
@@ -64,7 +69,7 @@ export class PostsRepository {
       post.userId,
       post.createdAt,
       post.updatedAt,
-      post.comments,
+      [],
     );
   }
 

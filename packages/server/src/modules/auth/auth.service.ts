@@ -10,26 +10,26 @@ import { UsersRepository } from '../users/users.repository';
 import { UserEntity } from '../users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly usersRepository: UsersRepository,
+    private readonly usersService: UsersService,
   ) {}
 
   async signup(dto: SignupRequestDto) {
     const hashedPassword = await this.hashData(dto.password);
     const userEntity = dto.toUserEntity(hashedPassword);
-    return this.usersRepository.createUser(userEntity);
+    return this.usersService.createUser(userEntity);
   }
 
   async login(dto: LoginRequestDto) {
-    const userEntity = await this.usersRepository.getUserByUsername(
+    const userEntity = await this.usersService.getUserByUsernameOrThrow(
       dto.username,
     );
-    if (!userEntity) throw new NotFoundException('User not found');
     const isPasswordMatches = await this.compareData(
       userEntity.password,
       dto.password,
@@ -60,14 +60,5 @@ export class AuthService {
     );
 
     return token;
-  }
-
-  async verifyToken(token: string) {
-    const decoded: { sub: string; username: string } =
-      await this.jwtService.verifyAsync(token, {
-        secret: this.configService.get<string>('ACCESS_TOKEN.SECRET'),
-      });
-
-    return decoded;
   }
 }
