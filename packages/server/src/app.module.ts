@@ -9,6 +9,8 @@ import {
 } from './modules';
 import { EnvConfig, JwtConfig } from './config';
 import { JwtModule } from '@nestjs/jwt';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './modules/auth/guards/roles.guard';
 
 @Module({
   imports: [
@@ -26,7 +28,12 @@ import { JwtModule } from '@nestjs/jwt';
     CommentsModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {
   static PORT: number;

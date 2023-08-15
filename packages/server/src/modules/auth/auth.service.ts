@@ -9,6 +9,7 @@ import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -22,8 +23,7 @@ export class AuthService {
     const user = await this.usersService.getUserByUsername(dto.username);
     if (user) throw new BadRequestException('User already exists');
     const hashedPassword = await this.hashData(dto.password);
-    dto.password = hashedPassword;
-    return this.usersService.createUser(dto.username, dto.password, dto.role);
+    return this.usersService.createUser(dto.username, hashedPassword, dto.role);
   }
 
   async login(dto: LoginRequestDto) {
@@ -33,9 +33,7 @@ export class AuthService {
       dto.password,
     );
     if (!isPasswordMatches) throw new UnauthorizedException('Invalid password');
-
-    const token = await this.generateToken(user.id, user.username);
-
+    const token = await this.generateToken(user.id, user.username, user.role);
     return token;
   }
 
@@ -47,9 +45,9 @@ export class AuthService {
     return await argon2.verify(hashedData, data);
   }
 
-  async generateToken(userId: number, username: string) {
+  async generateToken(userId: number, username: string, role: User['role']) {
     const token = await this.jwtService.signAsync(
-      { userId, username },
+      { userId, username, role },
       {
         secret: this.configService.get<string>('ACCESS_TOKEN.SECRET'),
         expiresIn: this.configService.get<string>('ACCESS_TOKEN.DURATION'),
@@ -60,7 +58,7 @@ export class AuthService {
   }
 
   async verifyToken(token: string) {
-    const decoded: { userId: number; username: string } =
+    const decoded: { userId: number; username: string; role: User['role'] } =
       await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('ACCESS_TOKEN.SECRET'),
       });
