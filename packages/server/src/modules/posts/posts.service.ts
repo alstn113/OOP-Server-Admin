@@ -3,8 +3,9 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { PostsRepository } from './posts.repository';
+
 import { CreatePostRequestDto } from './dto/create-post-request.dto';
+import { PostsRepository } from './posts.repository';
 import { UsersService } from '../users/users.service';
 
 @Injectable()

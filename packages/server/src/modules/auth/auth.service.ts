@@ -3,13 +3,15 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { SignupRequestDto } from './dto/signup-request.dto';
-import { LoginRequestDto } from './dto/login-request.dto';
-import * as argon2 from 'argon2';
-import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { UsersService } from '../users/users.service';
+import { JwtService } from '@nestjs/jwt';
+
 import { User } from '@prisma/client';
+import * as argon2 from 'argon2';
+
+import { LoginRequestDto } from './dto/login-request.dto';
+import { SignupRequestDto } from './dto/signup-request.dto';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {

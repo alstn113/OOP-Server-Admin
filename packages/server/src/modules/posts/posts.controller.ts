@@ -9,19 +9,21 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { PostsService } from './posts.service';
-import { CreatePostRequestDto } from './dto/create-post-request.dto';
 import {
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { PostResponseDto } from './dto/post-response.dto';
-import { AuthGuard } from '../auth/guards/auth.guard';
-import { GetCurrentUser } from '../auth/decorators/get-current-user.decorator';
+
 import { plainToInstance } from 'class-transformer';
+
+import { CreatePostRequestDto } from './dto/create-post-request.dto';
+import { PostResponseDto } from './dto/post-response.dto';
+import { PostsService } from './posts.service';
 import { AuthRoles } from '../auth/decorators/auth-roles.decorator';
+import { GetCurrentUser } from '../auth/decorators/get-current-user.decorator';
+import { AuthGuard } from '../auth/guards/auth.guard';
 
 @ApiTags('posts')
 @Controller('posts')

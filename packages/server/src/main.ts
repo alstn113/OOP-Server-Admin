@@ -1,13 +1,15 @@
-import { NestFactory, Reflector } from '@nestjs/core';
-import { AppModule } from './app.module';
 import {
   ClassSerializerInterceptor,
   Logger,
   ValidationPipe,
 } from '@nestjs/common';
-import helmet from 'helmet';
-import * as cookieParser from 'cookie-parser';
+import { NestFactory, Reflector } from '@nestjs/core';
+
 import * as compression from 'compression';
+import * as cookieParser from 'cookie-parser';
+import helmet from 'helmet';
+
+import { AppModule } from './app.module';
 import { createDocumnet } from './lib/swagger';
 
 const bootstrap = async () => {
