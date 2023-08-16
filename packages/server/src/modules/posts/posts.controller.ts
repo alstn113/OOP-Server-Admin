@@ -21,8 +21,7 @@ import { PostResponseDto } from './dto/post-response.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { GetCurrentUser } from '../auth/decorators/get-current-user.decorator';
 import { plainToInstance } from 'class-transformer';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { RolesGuard } from '../auth/guards/roles.guard';
+import { AuthRoles } from '../auth/decorators/auth-roles.decorator';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -30,8 +29,7 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @AuthRoles()
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ description: 'Get All Posts', type: [PostResponseDto] })
   async getPosts() {
@@ -41,8 +39,6 @@ export class PostsController {
   }
 
   @Get(':postId')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('USER')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ description: 'Get Post By Id', type: PostResponseDto })
   async getPostById(@Param('postId') postId: number) {
