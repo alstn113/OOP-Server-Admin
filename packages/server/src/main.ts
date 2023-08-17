@@ -29,9 +29,6 @@ const bootstrap = async () => {
   // pipe는 요청을 가공, 검증
   // intercept는 응답을 가공, 변경
 
-  // 응답 객체 직렬화 class -> json
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-
   // 요청 객체 역직렬화 json -> class
   app.useGlobalPipes(
     new ValidationPipe({
@@ -39,6 +36,9 @@ const bootstrap = async () => {
       transform: true, // 요청 데이터를 지정된 타입으로 자동 변환합니다.
     }),
   );
+
+  // 응답 객체 직렬화 class -> json
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   app.enableShutdownHooks();
   createDocumnet(app);
